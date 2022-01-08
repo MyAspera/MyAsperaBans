@@ -1,0 +1,5 @@
+name: MABans
+author: 'MyAspera.pl Team'
+version: '${project.version}'
+description: '${project.description}'
+main: pl.myaspera.bans.BansPlugin
