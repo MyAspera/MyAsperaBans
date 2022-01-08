@@ -21,7 +21,7 @@ public class UpdatePlugin {
 
     public void getVersion(final Consumer<String> consumer) {
         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-            try (InputStream inputStream = new URL("https://pastebin.com/raw/69XG5eMj").openStream(); Scanner scanner = new Scanner(inputStream)) {
+            try (InputStream inputStream = new URL("https://raw.githubusercontent.com/MyAspera/MyAsperaBans/master/version.txt").openStream(); Scanner scanner = new Scanner(inputStream)) {
                 consumer.accept(new BufferedReader(new InputStreamReader(inputStream)).readLine());
             } catch (IOException exception) {
                 this.plugin.getLogger().info("Cannot look for updates: " + exception.getMessage());
