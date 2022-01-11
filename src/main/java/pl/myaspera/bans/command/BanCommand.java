@@ -30,7 +30,7 @@ public class BanCommand extends CommandBase {
             ChatUtil.sendMessage(sender, "&7Prawidłowe użycie komendy: &3/ban <gracz> <powód>");
             return;
         }
-        if(this.plugin.getBanData().getBan(args[0]) != null) {
+        if(this.plugin.getPluginData().getBan(args[0]) != null) {
             ChatUtil.sendMessage(sender, this.plugin.getMessagesConfiguration().playerAlreadyBanned);
             return;
         }
@@ -43,7 +43,7 @@ public class BanCommand extends CommandBase {
             banAdmin = "konsola";
         }
         Ban ban = new Ban(args[0], reason, -1, banAdmin);
-        this.plugin.getBanData().addBan(ban);
+        this.plugin.getPluginData().addBan(ban);
         this.plugin.getDatabase().save(ban);
         Player banned = Bukkit.getPlayer(args[0]);
         if(banned != null) {

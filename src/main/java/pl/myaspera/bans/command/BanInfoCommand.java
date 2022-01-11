@@ -27,7 +27,7 @@ public class BanInfoCommand extends CommandBase {
             ChatUtil.sendMessage(sender, "&7Prawidłowe użycie komendy: &3/baninfo <gracz>");
             return;
         }
-        Ban ban = this.plugin.getBanData().getBan(args[0]);
+        Ban ban = this.plugin.getPluginData().getBan(args[0]);
         if(ban == null) {
             ChatUtil.sendMessage(sender, this.plugin.getMessagesConfiguration().playerNotBanned);
             return;

@@ -5,6 +5,7 @@ import pl.myaspera.bans.BansPlugin;
 import pl.myaspera.bans.data.PluginConfiguration;
 import pl.myaspera.bans.data.database.DataModel;
 import pl.myaspera.bans.object.Ban;
+import pl.myaspera.bans.object.Mute;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,23 +44,43 @@ public final class MySQLDataModel implements DataModel {
 
     @Override
     public void load() {
-        String table = "CREATE TABLE IF NOT EXISTS `" + this.plugin.getPluginConfiguration().mysqlTable + "` (" +
+        String tableBans = "CREATE TABLE IF NOT EXISTS `" + this.plugin.getPluginConfiguration().mysqlTableBans + "` (" +
                 "playerName varchar(50) NOT NULL," +
                 "reason TEXT NOT NULL," +
                 "duration BIGINT NOT NULL," +
                 "date BIGINT NOT NULL," +
                 "admin varchar(50) NOT NULL," +
                 "PRIMARY KEY(playerName));";
-        this.executeUpdate(table);
+        this.executeUpdate(tableBans);
+        String tableMutes = "CREATE TABLE IF NOT EXISTS `" + this.plugin.getPluginConfiguration().mysqlTableMutes + "` (" +
+                "playerName varchar(50) NOT NULL," +
+                "reason TEXT NOT NULL," +
+                "duration BIGINT NOT NULL," +
+                "date BIGINT NOT NULL," +
+                "admin varchar(50) NOT NULL," +
+                "PRIMARY KEY(playerName));";
+        this.executeUpdate(tableMutes);
 
-        this.executeQuery("SELECT * FROM `" + this.plugin.getPluginConfiguration().mysqlTable + "`", result -> {
+        this.executeQuery("SELECT * FROM `" + this.plugin.getPluginConfiguration().mysqlTableBans + "`", result -> {
             int i = 0;
             try {
                 while (result.next()) {
-                    this.plugin.getBanData().addBan(new Ban(result));
+                    this.plugin.getPluginData().addBan(new Ban(result));
                     i++;
                 }
                 this.plugin.getLogger().info("Załadowano " + i + " banów!");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+        this.executeQuery("SELECT * FROM `" + this.plugin.getPluginConfiguration().mysqlTableMutes + "`", result -> {
+            int i = 0;
+            try {
+                while (result.next()) {
+                    this.plugin.getPluginData().addMute(new Mute(result));
+                    i++;
+                }
+                this.plugin.getLogger().info("Załadowano " + i + " wyciszonych graczy!");
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -68,8 +89,8 @@ public final class MySQLDataModel implements DataModel {
 
     @Override
     public void save() {
-        int i = 0;
-        for(Ban ban : this.plugin.getBanData().getBans().values()) {
+        int intBans = 0;
+        for(Ban ban : this.plugin.getPluginData().getBans().values()) {
             if (ban.isExpire()) {
                 this.delete(ban);
                 this.plugin.getLogger().info("Ban gracza " + ban.getPlayerName() + " wygasł i zostanie usunięty!");
@@ -77,14 +98,27 @@ public final class MySQLDataModel implements DataModel {
             }
             if(!ban.isChanges()) continue;
             this.save(ban);
-            i++;
+            intBans++;
         }
-        this.plugin.getLogger().info("Zapisano " + i + " banów!");
+        this.plugin.getLogger().info("Zapisano " + intBans + " banów!");
+
+        int intMutes = 0;
+        for(Mute mute : this.plugin.getPluginData().getMutes().values()) {
+            if (mute.isExpire()) {
+                this.delete(mute);
+                this.plugin.getLogger().info("Wyciszenie gracza " + mute.getPlayerName() + " wygasło i zostanie usunięte!");
+                continue;
+            }
+            if(!mute.isChanges()) continue;
+            this.save(mute);
+            intMutes++;
+        }
+        this.plugin.getLogger().info("Zapisano " + intMutes + " wyciszonych graczy!");
     }
 
     @Override
     public void save(Ban ban) {
-        String insert = "INSERT INTO `" + this.plugin.getPluginConfiguration().mysqlTable + "` VALUES(" +
+        String insert = "INSERT INTO `" + this.plugin.getPluginConfiguration().mysqlTableBans + "` VALUES(" +
                 "'%playerName%'," +
                 "'%reason%'," +
                 "'%duration%'," +
@@ -103,15 +137,44 @@ public final class MySQLDataModel implements DataModel {
         this.executeUpdate(insert);
         ban.setChanges(false);
     }
+    @Override
+    public void save(Mute mute) {
+        String insert = "INSERT INTO `" + this.plugin.getPluginConfiguration().mysqlTableMutes + "` VALUES(" +
+                "'%playerName%'," +
+                "'%reason%'," +
+                "'%duration%'," +
+                "'%date%'," +
+                "'%admin%'" +
+                ") ON DUPLICATE KEY UPDATE " +
+                "reason='%reason%'," +
+                "duration='%duration%'," +
+                "date='%date%'," +
+                "admin='%admin%';";
+        insert = insert.replace("%playerName%", mute.getPlayerName());
+        insert = insert.replace("%reason%", mute.getReason());
+        insert = insert.replace("%duration%", Long.toString(mute.getLongMuteDuration()));
+        insert = insert.replace("%date%", Long.toString(mute.getLongMuteDate()));
+        insert = insert.replace("%admin%", mute.getMuteAdmin());
+        this.executeUpdate(insert);
+        mute.setChanges(false);
+    }
 
     @Override
-    public void delete() {
-        this.executeUpdate("DELETE FROM `" + this.plugin.getPluginConfiguration().mysqlTable + "`");
+    public void deleteAllBans() {
+        this.executeUpdate("DELETE FROM `" + this.plugin.getPluginConfiguration().mysqlTableBans + "`");
+    }
+    @Override
+    public void deleteAllMutes() {
+        this.executeUpdate("DELETE FROM `" + this.plugin.getPluginConfiguration().mysqlTableMutes + "`");
     }
 
     @Override
     public void delete(Ban ban) {
-        this.executeUpdate("DELETE FROM `" + this.plugin.getPluginConfiguration().mysqlTable + "` WHERE playerName='" + ban.getPlayerName() + "'");
+        this.executeUpdate("DELETE FROM `" + this.plugin.getPluginConfiguration().mysqlTableBans + "` WHERE playerName='" + ban.getPlayerName() + "'");
+    }
+    @Override
+    public void delete(Mute mute) {
+        this.executeUpdate("DELETE FROM `" + this.plugin.getPluginConfiguration().mysqlTableMutes + "` WHERE playerName='" + mute.getPlayerName() + "'");
     }
 
     public void executeQuery(String query, Consumer<ResultSet> action) {

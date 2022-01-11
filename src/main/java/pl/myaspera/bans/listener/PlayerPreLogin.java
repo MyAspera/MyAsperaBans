@@ -21,7 +21,7 @@ public final class PlayerPreLogin implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(AsyncPlayerPreLoginEvent e){
         String name = e.getName();
-        Ban ban = this.plugin.getBanData().getBan(name);
+        Ban ban = this.plugin.getPluginData().getBan(name);
         if(ban !=null) {
             MessagesConfiguration messageConfiguration = this.plugin.getMessagesConfiguration();
             if(ban.isPerm()) {
@@ -33,7 +33,7 @@ public final class PlayerPreLogin implements Listener {
                     ChatUtil.sendBroadcast(messageConfiguration.bannedPlayerLogin.replace("%player%", ban.getPlayerName()), "mabans.bannedtryjoin");
                 } else {
                     this.plugin.getDatabase().delete(ban);
-                    this.plugin.getBanData().removeBan(ban);
+                    this.plugin.getPluginData().removeBan(ban);
                     ChatUtil.sendBroadcast(messageConfiguration.bannedPlayerLoginExpire.replace("%player%", ban.getPlayerName()), "mabans.bannedtryjoin");
                 }
             }

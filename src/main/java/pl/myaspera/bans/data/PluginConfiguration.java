@@ -5,22 +5,32 @@ import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.configs.annotation.Exclude;
 import eu.okaeri.configs.annotation.Header;
 import eu.okaeri.configs.exception.OkaeriException;
-import org.checkerframework.checker.units.qual.C;
 
 @Header("Konfiguracja pluginu MyAsperaBans")
 @Header("Github: https://github.com/MyAspera/MyAsperaBans")
-@Header("")
-@Header("Uprawnienia:")
+@Header(" ")
+@Header("Uprawnienia ogólne:")
 @Header("mabans.nofityupdate - Informacja o nowej wersji pluginu po wejściu na serwer")
+@Header(" ")
+@Header("Uprawnienia banów:")
 @Header("mabans.bannedtryjoin - Informacja gdy zbanowany gracz chce wejść na serwer")
 @Header("mabans.ban - Dostęp do komendy /ban")
 @Header("mabans.tempban - Dostęp do komendy /tempban")
 @Header("mabans.unban - Dostęp do komendy /unban")
 @Header("mabans.unbanall - Dostęp do komendy /unbanall")
 @Header("mabans.baninfo - Dostęp do komendy /baninfo")
+@Header(" ")
+@Header("Uprawnienia wyciszeń:")
+@Header("mabans.mutetrychat - Informacja gdy wyciszony gracz chce pisać na czacie")
+@Header("mabans.mute - Dostęp do komendy /mute")
+@Header("mabans.tempmute - Dostęp do komendy /tempmute")
+@Header("mabans.unmute - Dostęp do komendy /unmute")
+@Header("mabans.unmuteall - Dostęp do komendy /unmuteall")
+@Header("mabans.muteinfo - Dostęp do komendy /muteinfo")
+@Header("mabans.mute.bypass - Gracz mimo wyciszenia może pisać na czacie")
 public final class PluginConfiguration extends OkaeriConfig {
 
-    @Comment("Powód bana gdy jego powód nie jest podany")
+    @Comment("Powód bana/wyciszenia gdy jego powód nie jest podany")
     public String noReasonBan = "Złamanie regulaminu!";
 
     @Comment("Typ bazy danych")
@@ -31,7 +41,7 @@ public final class PluginConfiguration extends OkaeriConfig {
     @Comment("Co ile minut bany mają być zapisywane?")
     @Comment("Jeśli chcesz to wyłączyć wpisz -1")
     @Comment("Zalecana wartość 60 (w przypadku FLAT), 30 (w przypadku MYSQL)")
-    public int autoSave = 1;
+    public int autoSave = 60;
     @Exclude
     public int autoSaveTicks;
 
@@ -50,7 +60,8 @@ public final class PluginConfiguration extends OkaeriConfig {
     public String mysqlUser = "root";
     public String mysqlPassword = "";
     public String mysqlDatabase = "minecraft";
-    public String mysqlTable = "mabans";
+    public String mysqlTableBans = "mabans";
+    public String mysqlTableMutes = "mamutes";
     public int mysqlTimeout = 30000;
     public boolean mysqlUseSSL = false;
     public int mysqlPoolSize = 5;

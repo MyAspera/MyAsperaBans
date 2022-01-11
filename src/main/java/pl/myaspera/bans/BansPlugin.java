@@ -6,12 +6,13 @@ import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.myaspera.bans.command.*;
-import pl.myaspera.bans.data.BanData;
 import pl.myaspera.bans.data.MessagesConfiguration;
 import pl.myaspera.bans.data.PluginConfiguration;
+import pl.myaspera.bans.data.PluginData;
 import pl.myaspera.bans.data.database.DataModel;
 import pl.myaspera.bans.data.database.flat.FlatDataModel;
 import pl.myaspera.bans.data.database.mysql.MySQLDataModel;
+import pl.myaspera.bans.listener.PlayerChat;
 import pl.myaspera.bans.listener.PlayerJoin;
 import pl.myaspera.bans.listener.PlayerPreLogin;
 import pl.myaspera.bans.task.AutosaveTask;
@@ -30,7 +31,7 @@ public class BansPlugin extends JavaPlugin {
     private PluginConfiguration pluginConfiguration;
     private MessagesConfiguration messagesConfiguration;
 
-    private BanData banData;
+    private PluginData pluginData;
 
     private DataModel dataModel;
 
@@ -47,7 +48,7 @@ public class BansPlugin extends JavaPlugin {
         this.registerCommands();
         this.registerListeners();
 
-        this.banData = new BanData(this);
+        this.pluginData = new PluginData(this);
         this.dataModel = (this.pluginConfiguration.databaseType.equalsIgnoreCase("mysql") ? new MySQLDataModel(this) : new FlatDataModel(this));
         this.dataModel.load();
 
@@ -74,27 +75,36 @@ public class BansPlugin extends JavaPlugin {
         this.commandManager = new CommandManager(this);
         this.commandManager.getMessageHandler().register("cmd.no.exists", sender -> ChatUtil.sendMessage(sender, "&cTaka komenda nie istnieje!"));
         this.commandManager.getMessageHandler().register("cmd.no.permission", sender -> ChatUtil.sendMessage(sender, "&cNie posiadasz uprawnień do tej komendy!"));
-        this.commandManager.getCompletionHandler().register("#bannedplayers", input -> new ArrayList<>(this.banData.getBans().keySet()));
+        this.commandManager.getCompletionHandler().register("#bannedplayers", input -> new ArrayList<>(this.pluginData.getBans().keySet()));
+        this.commandManager.getCompletionHandler().register("#mutedplayers", input -> new ArrayList<>(this.pluginData.getMutes().keySet()));
 
         new BanCommand(this);
         new BanInfoCommand(this);
         new TempBanCommand(this);
         new UnBanAllCommand(this);
         new UnBanCommand(this);
+        new MuteCommand(this);
+        new MuteInfoCommand(this);
+        new TempMuteCommand(this);
+        new UnMuteAllCommand(this);
+        new UnMuteCommand(this);
     }
 
     private void registerListeners() {
+        new PlayerChat(this);
         new PlayerJoin(this);
         new PlayerPreLogin(this);
     }
 
     private void checkPluginUpdate() {
+        this.getLogger().info("Sprawdzam czy jest nowa wersja pluginu...");
         new UpdatePlugin(this).getVersion(version -> {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                this.getLogger().info("The plugin is updated to the latest version!");
+                this.getLogger().info("Korzystasz z aktualnej wersji!");
             } else {
                 this.newPluginUpdate = true;
-                this.getLogger().info("There is a new update available!");
+                this.getLogger().info("Nowa wersja jest już dostępna do pobrania:");
+                this.getLogger().info("https://github.com/MyAspera/MyAsperaBans/releases");
             }
         });
     }
@@ -119,8 +129,8 @@ public class BansPlugin extends JavaPlugin {
         return this.messagesConfiguration;
     }
 
-    public BanData getBanData() {
-        return this.banData;
+    public PluginData getPluginData() {
+        return this.pluginData;
     }
 
     public DataModel getDatabase() {

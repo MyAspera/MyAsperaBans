@@ -24,7 +24,7 @@ public class UpdatePlugin {
             try (InputStream inputStream = new URL("https://raw.githubusercontent.com/MyAspera/MyAsperaBans/master/version.txt").openStream(); Scanner scanner = new Scanner(inputStream)) {
                 consumer.accept(new BufferedReader(new InputStreamReader(inputStream)).readLine());
             } catch (IOException exception) {
-                this.plugin.getLogger().info("Cannot look for updates: " + exception.getMessage());
+                this.plugin.getLogger().info("Błąd podczas sprawdzania aktualizacji: " + exception.getMessage());
             }
         });
     }

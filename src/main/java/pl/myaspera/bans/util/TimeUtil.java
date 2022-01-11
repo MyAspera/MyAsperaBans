@@ -46,13 +46,10 @@ public final class TimeUtil {
         return czas * 1000L;
     }
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss");
 
     public static String getDate(long czas) {
         return sdf.format(new Date(czas));
     }
 
-    public static long addTime(int seconds){
-        return System.currentTimeMillis()+seconds*1000L;
-    }
 }

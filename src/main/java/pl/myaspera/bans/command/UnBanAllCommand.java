@@ -26,7 +26,7 @@ public class UnBanAllCommand extends CommandBase {
         if(sender.getName().equalsIgnoreCase("console")) {
             unbanAdmin = "konsola";
         }
-        this.plugin.getBanData().unbanAll();
+        this.plugin.getPluginData().unbanAll();
         ChatUtil.sendBroadcast(this.plugin.getMessagesConfiguration().unBanAllBroadcast.replace("%admin%", unbanAdmin));
     }
 }

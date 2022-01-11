@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import pl.myaspera.bans.BansPlugin;
 import pl.myaspera.bans.data.database.DataModel;
 import pl.myaspera.bans.object.Ban;
+import pl.myaspera.bans.object.Mute;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,24 +31,37 @@ public class FlatDataModel implements DataModel {
 
     @Override
     public void load() {
-        ConfigurationSection cs1 = this.databaseYaml.getConfigurationSection("bans");
-        if(cs1 == null) {
+        ConfigurationSection cs1Bans = this.databaseYaml.getConfigurationSection("bans");
+        if(cs1Bans != null) {
+            int intBans = 0;
+            for(String string : cs1Bans.getKeys(false)) {
+                ConfigurationSection cs = cs1Bans.getConfigurationSection(string);
+                this.plugin.getPluginData().addBan(new Ban(string, cs));
+                intBans++;
+            }
+            this.plugin.getLogger().info("Załadowano " + intBans + " banów!");
+        } else {
             this.plugin.getLogger().log(Level.INFO, "Brak banów do załadowania!");
-            return;
         }
-        int i = 0;
-        for(String string : cs1.getKeys(false)) {
-            ConfigurationSection cs = cs1.getConfigurationSection(string);
-            this.plugin.getBanData().addBan(new Ban(string, cs));
-            i++;
+
+        ConfigurationSection cs1Mutes = this.databaseYaml.getConfigurationSection("mutes");
+        if(cs1Mutes != null) {
+            int intMutes = 0;
+            for(String string : cs1Mutes.getKeys(false)) {
+                ConfigurationSection cs = cs1Mutes.getConfigurationSection(string);
+                this.plugin.getPluginData().addMute(new Mute(string, cs));
+                intMutes++;
+            }
+            this.plugin.getLogger().info("Załadowano " + intMutes + " wyciszonych graczy!");
+        } else {
+            this.plugin.getLogger().log(Level.INFO, "Brak wyciszonych graczy do załadowania!");
         }
-        this.plugin.getLogger().info("Załadowano " + i + " banów!");
     }
 
     @Override
     public void save() {
-        int i = 0;
-        for(Ban ban : this.plugin.getBanData().getBans().values()) {
+        int intBans = 0;
+        for(Ban ban : this.plugin.getPluginData().getBans().values()) {
             if (ban.isExpire()) {
                 this.delete(ban);
                 this.plugin.getLogger().info("Ban gracza " + ban.getPlayerName() + " wygasł i zostanie usunięty!");
@@ -55,9 +69,22 @@ public class FlatDataModel implements DataModel {
             }
             if(!ban.isChanges()) continue;
             this.save(ban);
-            i++;
+            intBans++;
         }
-        this.plugin.getLogger().info("Zapisano " + i + " banów!");
+        this.plugin.getLogger().info("Zapisano " + intBans + " banów!");
+
+        int intMutes = 0;
+        for(Mute mute : this.plugin.getPluginData().getMutes().values()) {
+            if (mute.isExpire()) {
+                this.delete(mute);
+                this.plugin.getLogger().info("Wyciszenie gracza " + mute.getPlayerName() + " wygasło i zostanie usunięte!");
+                continue;
+            }
+            if(!mute.isChanges()) continue;
+            this.save(mute);
+            intMutes++;
+        }
+        this.plugin.getLogger().info("Zapisano " + intMutes + " wyciszonych graczy!");
     }
 
     @Override
@@ -73,10 +100,32 @@ public class FlatDataModel implements DataModel {
         }
         ban.setChanges(false);
     }
+    @Override
+    public void save(final Mute mute) {
+        this.databaseYaml.set("mutes." + mute.getPlayerName() + ".reason", mute.getReason());
+        this.databaseYaml.set("mutes." + mute.getPlayerName() + ".banDuration", mute.getLongMuteDuration());
+        this.databaseYaml.set("mutes." + mute.getPlayerName() + ".banDate", mute.getLongMuteDate());
+        this.databaseYaml.set("mutes." + mute.getPlayerName() + ".banAdmin", mute.getMuteAdmin());
+        try {
+            this.databaseYaml.save(this.databaseFile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        mute.setChanges(false);
+    }
 
     @Override
-    public void delete() {
+    public void deleteAllBans() {
         this.databaseYaml.set("bans", null);
+        try {
+            this.databaseYaml.save(this.databaseFile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    @Override
+    public void deleteAllMutes() {
+        this.databaseYaml.set("mutes", null);
         try {
             this.databaseYaml.save(this.databaseFile);
         } catch (IOException ex) {
@@ -87,6 +136,15 @@ public class FlatDataModel implements DataModel {
     @Override
     public void delete(final Ban ban) {
         this.databaseYaml.set("bans." + ban.getPlayerName(), null);
+        try {
+            this.databaseYaml.save(this.databaseFile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    @Override
+    public void delete(final Mute mute) {
+        this.databaseYaml.set("mutes." + mute.getPlayerName(), null);
         try {
             this.databaseYaml.save(this.databaseFile);
         } catch (IOException ex) {

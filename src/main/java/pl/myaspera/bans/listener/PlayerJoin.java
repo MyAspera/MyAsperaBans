@@ -17,14 +17,13 @@ public class PlayerJoin implements Listener {
     }
     private final BansPlugin plugin;
 
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if(player.hasPermission("mabans.nofityupdate")) {
             if(this.plugin.isNewPluginUpdate()) {
-                ChatUtil.sendMessage(player, "&8[&3AsperaBans&8] &cDostępna jest nowa wersja pluginu!");
-                ChatUtil.sendURLMessage(player, "&8[&3AsperaBans&8] &aKliknij na wiadomość aby pobrać najnowszą wersję z githuba", "https://github.com/MyAspera/MyAsperaBans");
+                ChatUtil.sendMessage(player, "&3&lMABans &8&l%> &cNowa wersja pluginu jest już dostępna do pobrania:");
+                ChatUtil.sendMessage(player, "&ahttps://github.com/MyAspera/MyAsperaBans/releases");
             }
         }
     }

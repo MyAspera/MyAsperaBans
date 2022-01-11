@@ -27,7 +27,7 @@ public class UnBanCommand extends CommandBase {
             ChatUtil.sendMessage(sender, "&7Prawidłowe użycie komendy: &3/unban <gracz>");
             return;
         }
-        if(this.plugin.getBanData().getBan(args[0]) == null) {
+        if(this.plugin.getPluginData().getBan(args[0]) == null) {
             ChatUtil.sendMessage(sender, this.plugin.getMessagesConfiguration().playerNotBanned);
             return;
         }
@@ -35,9 +35,9 @@ public class UnBanCommand extends CommandBase {
         if(sender.getName().equalsIgnoreCase("console")) {
             unbanAdmin = "konsola";
         }
-        Ban ban = this.plugin.getBanData().getBan(args[0]);
+        Ban ban = this.plugin.getPluginData().getBan(args[0]);
         ChatUtil.sendBroadcast(this.plugin.getMessagesConfiguration().unBanBroadcast.replace("%player%", ban.getPlayerName()).replace("%admin%", unbanAdmin));
         this.plugin.getDatabase().delete(ban);
-        this.plugin.getBanData().removeBan(ban);
+        this.plugin.getPluginData().removeBan(ban);
     }
 }

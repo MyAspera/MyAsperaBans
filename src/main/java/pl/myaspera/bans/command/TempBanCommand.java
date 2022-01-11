@@ -34,7 +34,7 @@ public class TempBanCommand extends CommandBase {
             ChatUtil.sendMessage(sender, "&7Prawidłowe użycie komendy: &3/tempban <gracz> <czas np. 5min> <powód>");
             return;
         }
-        if(this.plugin.getBanData().getBan(args[0]) != null) {
+        if(this.plugin.getPluginData().getBan(args[0]) != null) {
             ChatUtil.sendMessage(sender, this.plugin.getMessagesConfiguration().playerAlreadyBanned);
             return;
         }
@@ -48,7 +48,7 @@ public class TempBanCommand extends CommandBase {
         }
         long banDuration = TimeUtil.getTimeWithString(args[1]);
         Ban ban = new Ban(args[0], reason, banDuration, banAdmin);
-        this.plugin.getBanData().addBan(ban);
+        this.plugin.getPluginData().addBan(ban);
         this.plugin.getDatabase().save(ban);
         Player banned = Bukkit.getPlayer(args[0]);
         if(banned != null) {
