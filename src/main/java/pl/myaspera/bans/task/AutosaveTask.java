@@ -13,7 +13,7 @@ public final class AutosaveTask implements Runnable {
 
     @Override
     public void run() {
-        this.plugin.getLogger().info("&aAutomatyczny zapis danych...");
+        this.plugin.getLogger().info("Automatyczny zapis danych...");
         this.plugin.getDatabase().save();
     }
 }

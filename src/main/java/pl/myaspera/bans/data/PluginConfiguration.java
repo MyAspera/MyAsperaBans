@@ -10,7 +10,7 @@ import eu.okaeri.configs.exception.OkaeriException;
 @Header("Github: https://github.com/MyAspera/MyAsperaBans")
 @Header(" ")
 @Header("Uprawnienia ogólne:")
-@Header("mabans.nofityupdate - Informacja o nowej wersji pluginu po wejściu na serwer")
+@Header("mabans.notifyupdate - Informacja o nowej wersji pluginu po wejściu na serwer")
 @Header(" ")
 @Header("Uprawnienia banów:")
 @Header("mabans.bannedtryjoin - Informacja gdy zbanowany gracz chce wejść na serwer")

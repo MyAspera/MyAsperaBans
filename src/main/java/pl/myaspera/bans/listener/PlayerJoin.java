@@ -20,7 +20,7 @@ public class PlayerJoin implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if(player.hasPermission("mabans.nofityupdate")) {
+        if(player.hasPermission("mabans.notifyupdate")) {
             if(this.plugin.isNewPluginUpdate()) {
                 ChatUtil.sendMessage(player, "&3&lMABans &8&l%> &cNowa wersja pluginu jest już dostępna do pobrania:");
                 ChatUtil.sendMessage(player, "&ahttps://github.com/MyAspera/MyAsperaBans/releases");
