@@ -5,7 +5,7 @@
 <br><br>
 #### Pobierz: [MABans](https://github.com/MyAspera/MyAsperaBans/releases) <br>
 **Uprawnienia ogólne:**<br>
-_mabans.nofityupdate_ - Informacja o nowej wersji pluginu po wejściu na serwer
+_mabans.notifyupdate_ - Informacja o nowej wersji pluginu po wejściu na serwer
 
 **Uprawnienia banów:**<br>
 _mabans.bannedtryjoin_ - Informacja gdy zbanowany gracz chce wejść na serwer<br>
